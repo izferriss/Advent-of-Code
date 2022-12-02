@@ -36,6 +36,15 @@
 
 // Find the Elf carrying the most Calories. How many total Calories is that Elf carrying?
 
+// --- Part Two ---
+// By the time you calculate the answer to the Elves' question, they've already realized that the Elf carrying the most Calories of food might eventually run out of snacks.
+
+// To avoid this unacceptable situation, the Elves would instead like to know the total Calories carried by the top three Elves carrying the most Calories. That way, even if one of those Elves runs out of snacks, they still have two backups.
+
+// In the example above, the top three Elves are the fourth Elf (with 24000 Calories), then the third Elf (with 11000 Calories), then the fifth Elf (with 10000 Calories). The sum of the Calories carried by these three elves is 45000.
+
+// Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
+
 let input =
     [
         [5324,5176,2197,2701,6185,3901,5392,2065,6467,6085,5062,1841,1197,1318],
@@ -298,8 +307,36 @@ let input =
         [6626,5971,6702,1726,3909,2262,6701,4754,4256,5897,3946,1457,4469]
     ];
 
-let max = 0;
+//PART 1
+// let max = 0;
 let curr = 0;
+
+// for(var i = 0; i < input.length; i++)
+// {
+//     for(var j = 0; j < input[i].length; j++)
+//     {
+//         curr += input[i][j];
+//     }
+//     if(curr > max)
+//     {
+//         max = curr;
+//         curr = 0;
+//     }
+//     else
+//     {
+//         curr = 0;
+//     }
+// }
+
+// console.log("MAX: " + max);
+
+//PART 2
+let max =
+    {
+        first: 0,
+        second: 0,
+        third: 0
+    };
 
 for(var i = 0; i < input.length; i++)
 {
@@ -307,9 +344,23 @@ for(var i = 0; i < input.length; i++)
     {
         curr += input[i][j];
     }
-    if(curr > max)
+    if(curr > max.first)
     {
-        max = curr;
+        max.third = max.second;
+        max.second = max.first;
+        max.first = curr;
+        curr = 0;
+    }
+    else if(curr > max.second)
+    {
+        max.third = max.second;
+        max.second = curr;
+        curr = 0;
+    }
+    else if(curr > max.third)
+    {
+        max.third = curr;
+        curr = 0;
     }
     else
     {
@@ -317,4 +368,4 @@ for(var i = 0; i < input.length; i++)
     }
 }
 
-console.log("MAX: " + max);
+console.log(max.first + max.second + max.third);
