@@ -103,7 +103,7 @@ for(var i = 0; i < input.length - 1; i+=2)
     //Opponent chooses Rock and we need to lose
     if(input[i] == 'A' && input[i + 1] == 'X')
     {
-        score += lose + scissors;
+        score += loss + scissors;
     }
 
     //Opponent chooses Paper and we need to win
@@ -119,7 +119,7 @@ for(var i = 0; i < input.length - 1; i+=2)
     //Opponent chooses Paper and we need to lose
     if(input[i] == 'B' && input[i + 1] == 'X')
     {
-        score += lose + rock;
+        score += loss + rock;
     }
 
     //Opponent chooses Scissors and we need to win
@@ -135,7 +135,7 @@ for(var i = 0; i < input.length - 1; i+=2)
     //Opponent chooses Scissors and we need to lose
     if(input[i] == 'C' && input[i + 1] == 'X')
     {
-        score += lose + paper;
+        score += loss + paper;
     }
 }
 
