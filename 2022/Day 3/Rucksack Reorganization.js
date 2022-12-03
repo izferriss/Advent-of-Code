@@ -445,8 +445,6 @@ for(var i = 0; i < input.length; i += 3)
     let groupMember3 = input[i + 2];
 
     let count = 0;
-
-    console.log("group member 1 (line" + i +") is the lengthiest");
     while(count < groupMember1.length)
         {
             if(groupMember2.indexOf(groupMember1[count]) > -1 && groupMember3.indexOf(groupMember1[count]) > -1)
@@ -458,7 +456,7 @@ for(var i = 0; i < input.length; i += 3)
                 count++;
             }
         }
-    console.log("\"" + groupMember1[count] + "\" is the common letter in this group");
+
     sum += alpha.get(groupMember1[count]);
 }
 
