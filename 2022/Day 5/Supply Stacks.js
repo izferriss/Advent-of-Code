@@ -577,9 +577,9 @@ for(var i = 0; i < input.length; i++)
 {
     var split, move, from, to;
     split = input[i].split(" ");
-    move = input[1];
-    from = input[3];
-    to = input[5];
+    move = split[1];
+    from = split[3];
+    to = split[5];
 
     processInstruction(move, from, to);
 }
@@ -587,6 +587,7 @@ for(var i = 0; i < input.length; i++)
 //Do work
 function processInstruction(move, from, to)
 {
+    console.log("move " + move + " from " + from + " to " + to);
     while(move > 0)
     {
         stacks[to - 1].push(stacks[from - 1].pop());
@@ -594,6 +595,7 @@ function processInstruction(move, from, to)
     }
 }
 
+//Prepare output (works)
 for(var i = 0; i < stacks.length; i++)
 {
     retstr += stacks[i][stacks[i].length - 1];
