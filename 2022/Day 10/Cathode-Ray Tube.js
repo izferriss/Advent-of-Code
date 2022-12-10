@@ -461,47 +461,113 @@ let input =
     "noop"
 ];
 
-let importantCycles = [20, 60, 100, 140, 180, 220];
-let signalStrengths = [];
+// PART 1
+// let importantCycles = [20, 60, 100, 140, 180, 220];
+// let signalStrengths = [];
+
+
+// PART 2
+let importantCycles = [40, 80, 120, 160, 200, 240];
+let CRTRow = 0;
+let CRT = [[],[],[],[],[],[]];
+console.log(CRT);
 
 for(var i = 0; i < input.length; i++)
 {
     if(input[i].includes("addx"))
     {
         numCycles++;
-        if(isImportant(numCycles))
+        // PART 1
+        // if(isImportant(numCycles))
+        // {
+        //     signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
+        //     console.log(signalStrengths);
+        // }
+        // console.log(isImportant(numCycles));
+        // PART 2
+        if(canDraw(CRTRow, numCycles, register))
         {
-            signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
-            console.log(signalStrengths);
+            CRT[CRTRow].push('#');
+            document.write("#");
         }
-        console.log(isImportant(numCycles));
-        numCycles++;
+        else
+        {
+            CRT[CRTRow].push('.');
+            document.write(".");
+        }
         if(isImportant(numCycles))
         {
-            signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
-            console.log(signalStrengths);
+            CRTRow++;
+            document.write("<BR>");
+        }
+        numCycles++;
+        //PART 1
+        // if(isImportant(numCycles))
+        // {
+        //     signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
+        //     console.log(signalStrengths);
+        // }
+        // PART 2
+        if(canDraw(CRTRow, numCycles, register))
+        {
+            CRT[CRTRow].push('#');
+            document.write("#");
+        }
+        else
+        {
+            CRT[CRTRow].push('.');
+            document.write(".");
+        }
+        if(isImportant(numCycles))
+        {
+            CRTRow++;
+            document.write("<BR>");
         }
         register += parseInt(input[i].substring(input[i].indexOf(" ")));
     }
     else//input is noop
     {
         numCycles++;
+        // PART 1
+        // if(isImportant(numCycles))
+        // {
+        //     signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
+        //     console.log(signalStrengths);
+        // }
+        // PART 2
+        if(canDraw(CRTRow, numCycles, register))
+        {
+            CRT[CRTRow].push('#');
+            document.write("#");
+        }
+        else
+        {
+            CRT[CRTRow].push('.');
+            document.write(".");
+        }
         if(isImportant(numCycles))
         {
-            signalStrengths.push(getSignalStrength(register, importantCycles[importantCycles.indexOf(numCycles)]));
-            console.log(signalStrengths);
+            CRTRow++;
+            document.write("<BR>");
         }
     }
 }
 
-console.log(signalStrengths.reduce((a, b) => a + b, 0));
 
-function getSignalStrength(register, importantCycle)
-{
-    return register * importantCycle;
-}
+// PART 1
+// console.log(signalStrengths.reduce((a, b) => a + b, 0));
+
+// function getSignalStrength(register, importantCycle)
+// {
+//     return register * importantCycle;
+// }
 
 function isImportant(cycle)
 {
     return importantCycles.includes(cycle);
+}
+
+function canDraw(CRTRow, cycle, register)
+{
+    return (cycle - 1) - (40 * CRTRow) == register || (cycle - 1) - (40 * CRTRow) == register - 1 || (cycle - 1) - (40 * CRTRow) == register + 1;
 }
