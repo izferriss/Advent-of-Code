@@ -209,3 +209,122 @@
 // In this example, the two most active monkeys inspected items 101 and 105 times. The level of monkey business in this situation can be found by multiplying these together: 10605.
 
 // Figure out which monkeys to chase by counting how many items they inspect over 20 rounds. What is the level of monkey business after 20 rounds of stuff-slinging simian shenanigans?
+
+let input =
+[
+    [//Monkey 0
+        {
+            items: [99, 63, 76, 93, 54, 73],
+            operation: "old * 11",
+            test: 2,
+            ifTrue: 7,
+            ifFalse: 1
+        }
+    ],
+    [//Monkey 1
+        {
+            items: [91, 60, 97, 54],
+            operation: "old + 1",
+            test: 17,
+            ifTrue: 3,
+            ifFalse: 2
+        }
+    ],
+    [//Monkey 2
+        {
+            items: [65],
+            operation: "old + 7",
+            test: 7,
+            ifTrue: 6,
+            ifFalse: 5
+        }
+    ],
+    [//Monkey 3
+        {
+            items: [84, 55],
+            operation: "old + 3",
+            test: 11,
+            ifTrue: 2,
+            ifFalse: 6
+        }
+    ],
+    [//Monkey 4
+        {
+            items: [86, 63, 79, 54, 83],
+            operation: "old * old",
+            test: 19,
+            ifTrue: 7,
+            ifFalse: 0
+        }
+    ],
+    [//Monkey 5
+        {
+            items: [96, 67, 56, 95, 64, 69, 96],
+            operation: "old + 4",
+            test: 5,
+            ifTrue: 4,
+            ifFalse: 0
+        }
+    ],
+    [//Monkey 6
+        {
+            items: [66, 94, 70, 93, 72, 67, 88, 51],
+            operation: "old * 5",
+            test: 13,
+            ifTrue: 4,
+            ifFalse: 5
+        }
+    ],
+    [//Monkey 7
+        {
+            items: [59, 59, 74],
+            operation: "old + 8",
+            test: 3,
+            ifTrue: 1,
+            ifFalse: 3
+        }
+    ]
+];
+
+let currentRound = 1;
+let inspectedItemsPerMonkey = [0, 0, 0, 0, 0, 0, 0, 0];
+while(currentRound <= 20)
+{
+    for(var i = 0; i < input.length; i++)
+    {
+        while(input[i][0].items.length > 0)
+        {
+            //Check first item
+            let item = input[i][0].items.shift();
+            console.log("shifted: " + item);
+
+            //Increment that an item has been checked
+            inspectedItemsPerMonkey[i]++;
+            
+            //Increase item's worry level
+            item = eval(input[i][0].operation.replaceAll("old", item));
+            console.log("operated: " + item);
+
+            //Reduce item's worry level
+            item = Math.floor(item / 3);
+            console.log("div3: " + item);
+
+            //Test item to pass to next monkey
+            if(item % input[i][0].test == 0)
+            {
+                input[input[i][0].ifTrue][0].items.push(item);
+            }
+            else
+            {
+                input[input[i][0].ifFalse][0].items.push(item);
+            }
+        }
+    }
+
+    currentRound++;
+}
+
+console.log(input);
+inspectedItemsPerMonkey.sort(function(a, b) {return a - b;});
+console.log(inspectedItemsPerMonkey.reverse());
+console.log(inspectedItemsPerMonkey[0] * inspectedItemsPerMonkey[1]);
