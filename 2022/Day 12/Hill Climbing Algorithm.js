@@ -27,6 +27,29 @@
 
 // What is the fewest steps required to move from your current position to the location that should get the best signal?
 
+// --- Part Two ---
+// As you walk up the hill, you suspect that the Elves will want to turn this into a hiking trail. The beginning isn't very scenic, though; perhaps you can find a better starting point.
+
+// To maximize exercise while hiking, the trail should start as low as possible: elevation a. The goal is still the square marked E. However, the trail should still be direct, taking the fewest steps to reach its goal. So, you'll need to find the shortest path from any square at elevation a to the square marked E.
+
+// Again consider the example from above:
+
+// Sabqponm
+// abcryxxl
+// accszExk
+// acctuvwj
+// abdefghi
+// Now, there are six choices for starting position (five marked a, plus the square marked S that counts as being at elevation a). If you start at the bottom-left square, you can reach the goal most quickly:
+
+// ...v<<<<
+// ...vv<<^
+// ...v>E^^
+// .>v>>>^^
+// >^>>>>>^
+// This path reaches the goal in only 29 steps, the fewest possible.
+
+// What is the fewest steps required to move starting from any square with elevation a to the location that should get the best signal?
+
 const input =
 [
     ['a','b','c','c','c','c','c','c','c','c','c','a','a','a','a','a','a','a','a','a','a','c','c','c','c','c','c','c','c','c','c','c','c','a','a','a','a','a','a','a','a','c','c','a','a','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','c','a','a','a','a','a'],
@@ -76,20 +99,37 @@ const input =
 const numRows = input.length;
 const numCols = input[0].length;
 
-//Find start and end
-let start, end;
+// PART 1
+// Find start and end
+// let start, end;
+
+//PART 2
+let start = [];
+let end;
 
 for(var i = 0; i < input.length; i++)
 {
     for(var j = 0; j < input[i].length; j++)
     {
-        if(input[i][j] == 'S')
-        {
-            //store start
-            start = [i, j];
+        // PART 1 find start and store its position
+        // if(input[i][j] == 'S')
+        // {
+        //     //store start
+        //     start = [i, j];
 
-            //change start on the grid to the lowest elevation, 'a'
-            input[i][j] = 'a';
+        //     //change start on the grid to the lowest elevation, 'a'
+        //     input[i][j] = 'a';
+        // }
+
+        // PART 2 add all 'a' positions to start array
+        if(input[i][j] == 'S' || input[i][j] == 'a')
+        {
+            start.push([i , j]);
+
+            if(input[i][j] == 'S')
+            {
+                input[i][j] == 'a';
+            }
         }
         if(input[i][j] == 'E')
         {
@@ -103,43 +143,62 @@ for(var i = 0; i < input.length; i++)
 }
 
 
-
-const queue =  [[start, 0]];
-const visited = new Set([positionToString(start)]);
-let result = -1;
-
-// Direction vectors
-var dRow = [-1, 0, 1, 0 ];
-var dCol = [0, 1, 0, -1 ];
-
-while(queue.length)
+// PART 2 (the for loop p much)
+const results = [];
+for(var k = 0; k < start.length; k++)
 {
-    let currPos = queue.shift();
-    let pos = currPos[0];
-    let steps = currPos[1];
+    const queue =  [[start[k], 0]];
+    const visited = new Set([positionToString(start[k])]);
+    let result = -1;
 
-    if(positionToString(pos) === positionToString(end))
+    // Direction vectors
+    var dRow = [-1, 0, 1, 0 ];
+    var dCol = [0, 1, 0, -1 ];
+
+    // PART 1 (BFS)
+    while(queue.length)
     {
-        result = steps;
-        break;
+        let currPos = queue.shift();
+        let pos = currPos[0];
+        let steps = currPos[1];
+
+        if(positionToString(pos) === positionToString(end))
+        {
+            result = steps;
+            break;
+        }
+
+        let iPos = pos[0];
+        let jPos = pos[1];
+        for(var i = 0; i < 4; i++)
+        {
+            var iNeighbor = iPos + dRow[i];
+            var jNeighbor = jPos + dCol[i];
+
+            if(isInGrid([iNeighbor, jNeighbor]) && canElevate(pos, [iNeighbor, jNeighbor]) && !visited.has(positionToString([iNeighbor, jNeighbor])))
+            {
+                queue.push([[iNeighbor, jNeighbor], steps + 1]);
+                visited.add(positionToString([iNeighbor, jNeighbor]));
+            }
+        }
     }
 
-    let iPos = pos[0];
-    let jPos = pos[1];
-    for(var i = 0; i < 4; i++)
-    {
-        var iNeighbor = iPos + dRow[i];
-        var jNeighbor = jPos + dCol[i];
+    //push result to results array
+    results.push(result);
+}
 
-        if(isInGrid([iNeighbor, jNeighbor]) && canElevate(pos, [iNeighbor, jNeighbor]) && !visited.has(positionToString([iNeighbor, jNeighbor])))
-        {
-            queue.push([[iNeighbor, jNeighbor], steps + 1]);
-            visited.add(positionToString([iNeighbor, jNeighbor]));
-        }
+const filteredResults = [];
+
+//filter out default values (-1)
+for(var i = 0; i < results.length; i++)
+{
+    if(results[i] != -1)
+    {
+        filteredResults.push(results[i]);
     }
 }
 
-console.log(result);
+console.log(Math.min(...filteredResults));
 
 //Helper functions
 function positionToString(pos)
