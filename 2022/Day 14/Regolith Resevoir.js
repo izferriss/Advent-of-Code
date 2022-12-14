@@ -114,6 +114,41 @@
 
 // To begin, get your puzzle input.
 
+// --- Part Two ---
+// You realize you misread the scan. There isn't an endless void at the bottom of the scan - there's floor, and you're standing on it!
+
+// You don't have time to scan the floor, so assume the floor is an infinite horizontal line with a y coordinate equal to two plus the highest y coordinate of any point in your scan.
+
+// In the example above, the highest y coordinate of any point is 9, and so the floor is at y=11. (This is as if your scan contained one extra rock path like -infinity,11 -> infinity,11.) With the added floor, the example above now looks like this:
+
+//         ...........+........
+//         ....................
+//         ....................
+//         ....................
+//         .........#...##.....
+//         .........#...#......
+//         .......###...#......
+//         .............#......
+//         .............#......
+//         .....#########......
+//         ....................
+// <-- etc #################### etc -->
+// To find somewhere safe to stand, you'll need to simulate falling sand until a unit of sand comes to rest at 500,0, blocking the source entirely and stopping the flow of sand into the cave. In the example above, the situation finally looks like this after 93 units of sand come to rest:
+
+// ............o............
+// ...........ooo...........
+// ..........ooooo..........
+// .........ooooooo.........
+// ........oo#ooo##o........
+// .......ooo#ooo#ooo.......
+// ......oo###ooo#oooo......
+// .....oooo.oooo#ooooo.....
+// ....oooooooooo#oooooo....
+// ...ooo#########ooooooo...
+// ..ooooo.......ooooooooo..
+// #########################
+// Using your scan, simulate the falling sand until the source of the sand becomes blocked. How many units of sand come to rest?
+
 const input =
 [
     ["494,23 -> 494,17 -> 494,23 -> 496,23 -> 496,20 -> 496,23 -> 498,23 -> 498,16 -> 498,23 -> 500,23 -> 500,18 -> 500,23 -> 502,23 -> 502,19 -> 502,23 -> 504,23 -> 504,18 -> 504,23"],
@@ -267,16 +302,19 @@ const input =
     ["507,116 -> 511,116"],
     ["496,36 -> 496,34 -> 496,36 -> 498,36 -> 498,30 -> 498,36 -> 500,36 -> 500,31 -> 500,36 -> 502,36 -> 502,27 -> 502,36 -> 504,36 -> 504,29 -> 504,36 -> 506,36 -> 506,34 -> 506,36 -> 508,36 -> 508,34 -> 508,36 -> 510,36 -> 510,30 -> 510,36 -> 512,36 -> 512,30 -> 512,36"],
     ["507,149 -> 507,151 -> 502,151 -> 502,155 -> 516,155 -> 516,151 -> 511,151 -> 511,149"]
+    // sample input
     // ["498,4 -> 498,6 -> 496,6"],
     // ["503,4 -> 502,4 -> 502,9 -> 494,9"]
 ];
 
-const adjust = 475;
-const cave = makeArray(175, 175);
+const adjust = 0;
+const cave = makeArray(700, 175);
 
 initCave();
 const count = [];
 let finished = false;
+const floor = findFloor();
+console.log(floor);
 
 while(!finished)
 {
@@ -389,20 +427,6 @@ function initCave()
 }
 function drawCave()
 {
-    // let div = document.getElementById("main");
-    // div.innerHTML = "";
-    // div.innerHTML += "<TABLE>";
-    // for(var i = 0; i < cave.length; i++)
-    // {
-    //     div.innerHTML += "<TR>";
-    //     for(var j = 0; j < cave[i].length; j++)
-    //     {
-    //         div.innerHTML += "<TD id =" + i + "," + j + ">" +  cave[i][j] + "</TD>";
-    //     }
-    //     div.innerHTML +="</TR>";
-    // }
-    // div.innerHTML += "</TABLE>";
-
     createTable(cave);
 }
 
@@ -440,9 +464,16 @@ function dropSand()
         }
 
     }
-    if(sand.y == cave.length - 1)
+    // PART 1
+    // if(sand.y == cave.length - 1)
+    // {
+    //     console.log("Finished with: " + (count.length - 1));
+    //     finished = true;
+    // }
+    // PART 2
+    if(sand.y == 0)
     {
-        console.log("Finished with: " + (count.length - 1));
+        console.log("Finished with: " + (count.length));
         finished = true;
     }
     drawSand(sand);
@@ -450,7 +481,11 @@ function dropSand()
 
 function isInBounds(num)
 {
-    return num < cave.length && num >= 0 && num < cave[0].length;
+    // PART 1
+    // return num < cave.length && num >= 0 && num < cave[0].length;
+
+    // PART 2
+    return num < floor && num >= 0 && num < cave[0].length;
 }
 
 function drawSand(sand)
@@ -472,7 +507,7 @@ function canFallDownwards(sand)
 {
     let checkY = sand.y + 1;
     let checkX = sand.x;
-    if(isInBounds(checkY) && isInBounds(checkX))
+    if(isInBounds(checkY))
     {
         return (cave[checkY][checkX] != '#' && cave[checkY][checkX] != 'o');
     }
@@ -503,4 +538,24 @@ function createTable(tableData)
   
     table.appendChild(tableBody);
     document.body.appendChild(table);
+}
+
+function findFloor()
+{
+    let floor = 0;
+    for(var i = 0; i < cave.length; i++)
+    {
+        for(var j = 0; j < cave[i].length; j++)
+        {
+            if(cave[i][j] == '#')
+            {
+                if(i > floor)
+                {
+                    floor = i;
+                }
+            }
+        }
+    }
+
+    return floor + 2;
 }
