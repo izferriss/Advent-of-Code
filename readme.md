@@ -1,3 +1,3 @@
 Days where community research was needed to come to a solution:<BR><BR>
-2022/13<BR>
-2022/15<BR>
+Dec 13 2022<BR>
+Dec 15 2022<BR>
