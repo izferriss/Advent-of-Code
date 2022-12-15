@@ -94,6 +94,15 @@
 
 // Consult the report from the sensors you just deployed. In the row where y=2000000, how many positions cannot contain a beacon?
 
+// --- Part Two ---
+// Your handheld device indicates that the distress signal is coming from a beacon nearby. The distress beacon is not detected by any sensor, but the distress beacon must have x and y coordinates each no lower than 0 and no larger than 4000000.
+
+// To isolate the distress beacon's signal, you need to determine its tuning frequency, which can be found by multiplying its x coordinate by 4000000 and then adding its y coordinate.
+
+// In the example above, the search space is smaller: instead, the x and y coordinates can each be at most 20. With this reduced search area, there is only a single position that could have a beacon: x=14, y=11. The tuning frequency for this distress beacon is 56000011.
+
+// Find the only possible position for the distress beacon. What is its tuning frequency?
+
 let input =
 [
     // SAMPLE
@@ -111,6 +120,7 @@ let input =
     // "Sensor at x=16, y=7: closest beacon is at x=15, y=3",
     // "Sensor at x=14, y=3: closest beacon is at x=15, y=3",
     // "Sensor at x=20, y=1: closest beacon is at x=15, y=3"
+    // INPUT
     "Sensor at x=2557568, y=3759110: closest beacon is at x=2594124, y=3746832",
     "Sensor at x=2684200, y=1861612: closest beacon is at x=2816974, y=2000000",
     "Sensor at x=1003362, y=1946094: closest beacon is at x=1972523, y=2563441",
@@ -153,38 +163,12 @@ let bounds =
     maxY: 0
 };
 
-console.log("PARSING INPUT: START");
 for(var i = 0; i < input.length; i++)
 {
     parseInput(input[i]);
 }
-console.log("PARSING INPUT: END");
-console.log(bounds);
-console.log("ADJUSTING POS. VALUES: START");
-adjustForMin();
-console.log("ADJUSTING POS. VALUES: END");
 
-console.log("CREATING GRID: START");
-const grid = makeArray(Math.abs(bounds.minX) + Math.abs(bounds.maxX) + 1, Math.abs(bounds.minY) + Math.abs(bounds.maxY) + 1);
-console.log("CREATING GRID: END");
-
-console.log("POPULATING GRID: START");
-initGrid();
-console.log("POPULATING GRID: END");
-
-console.log("DISPLAYING COVERAGES: START");
-displayCoverage();
-console.log("DISPLAY COVERAGES: END");
-
-
-//createTable(grid);
-
-// SAMPLE
-// highlight_row(10);
-
-console.log("COUNTING RESULTS: START");
-highlight_row(2000000);
-console.log("COUNTING RESULTS: END");
+part1();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -264,92 +248,39 @@ function adjustForMin()
     }
 }
 
-function makeArray(w, h)
+function part1()
 {
-    var arr = [];
-    for(var i = 0; i < h; i++)
-    {
-        arr.push(new Array(w));
-    }
+    let noBeacons = new Set();
+    let beaconsOnLine = new Set();
 
-    return arr;
-}
+    // SAMPLE
+    // let checkY = 10;
 
-function initGrid()
-{
-    //populate entire grid with "."
-    for(var i = 0; i < grid.length; i++)
+    // PART 1
+    let checkY = 2000000;
+
+    for(var i = 0; i < sensors.length; i++)
     {
-        for(var j = 0; j < grid[i].length; j++)
+        // Add any beacons that share a Y value with the sensor to beaconsOnLine set
+        if(sensors[i].nearestBeacon.y === checkY)
         {
-            grid[i][j] = ".";
+            beaconsOnLine.add(sensors[i].nearestBeacon.x);
         }
-    }
 
-    //denote sensors with "S" and beacons with "B"
-    for(var i = 0; i < sensors.length; i++)
-    {
-        grid[sensors[i].y - 1][sensors[i].x - 1] = "S";
-        grid[sensors[i].nearestBeacon.y - 1][sensors[i].nearestBeacon.x - 1] = "B";
-    }
-}
-
-function createTable(tableData)
-{
-    var table = document.createElement('table');
-    var tableBody = document.createElement('tbody');
-  
-    tableData.forEach(function(rowData)
-    {
-        var row = document.createElement('tr');
-
-        rowData.forEach(function(cellData)
+        // Manhattan distance between line checkY and (sensor.x, sensor.y)
+        let minDistance = Math.abs(sensors[i].x - sensors[i].x) + Math.abs(sensors[i].y - checkY);
+        if(minDistance <= sensors[i].beaconDistance)
         {
-            var cell = document.createElement('td');
-            cell.appendChild(document.createTextNode(cellData));
-            row.appendChild(cell);
-        });
-  
-        tableBody.appendChild(row);
-    });
-  
-    table.appendChild(tableBody);
-    document.body.appendChild(table);
-}
+            let radialDistSensorX = sensors[i].beaconDistance - minDistance;
 
-function displayCoverage()
-{
-    for(var i = 0; i < sensors.length; i++)
-    {
-        for(var j = 0; j < grid.length; j++)
-        {
-            for(var k = 0; k < grid[0].length; k++)
+            //for every x value within radius on line checkY, add to noBeacons set
+            for(var j = sensors[i].x - radialDistSensorX; j <= sensors[i].x + radialDistSensorX; j++)
             {
-                if(Math.abs(sensors[i].x - k - 1) + Math.abs(sensors[i].y - j - 1) <= sensors[i].beaconDistance)
-                {
-                    if(grid[j][k] != "B" && grid[j][k] != "S")
-                    {
-                        grid[j][k] = "#";
-                    }
-                }
+                noBeacons.add(j);
             }
         }
     }
-}
 
-function highlight_row(row)
-{
-    let count = 0;
-
-    for(var i = 0; i < grid[row].length; i++)
-    {
-        if(grid[row][i] != ".")
-        {
-            count++;
-        }
-    }
-
-    console.log("count of dots in row " + row + " is " + count);
-    console.log("row.length - count = " + grid[row].length - count);
-
+    //log of the difference between set sizes which denotes how many positions on line checkY that cannot contain a beacon
+    console.log(noBeacons.size - beaconsOnLine.size);
 }
