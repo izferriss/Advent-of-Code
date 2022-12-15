@@ -168,7 +168,8 @@ for(var i = 0; i < input.length; i++)
     parseInput(input[i]);
 }
 
-part1();
+//part1();
+part2();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -283,4 +284,58 @@ function part1()
 
     //log of the difference between set sizes which denotes how many positions on line checkY that cannot contain a beacon
     console.log(noBeacons.size - beaconsOnLine.size);
+}
+
+function part2()
+{
+    let max = 40000000;
+    let min = 0;
+
+    for(var i = min; i < max; i++)
+    {
+        const intervals = [];
+        for(var j = 0; j < sensors.length; j++)
+        {
+            const minDistance = Math.abs(sensors[j].x - sensors[j].x) + Math.abs(sensors[j].y - i);
+            if(minDistance <= sensors[j].beaconDistance)
+            {
+                let radialDistSensorX = sensors[j].beaconDistance - minDistance;
+                let lower = sensors[j].x - radialDistSensorX;
+                let upper = sensors[j].x + radialDistSensorX;
+
+                intervals.push([lower, upper]);
+            }
+        }
+
+        intervals.sort((first, second) => first[0] - second[0]);
+
+        for(var j = 1; j < intervals.length; j++)
+        {
+            if(intervals[j - 1][1] >= intervals[j][0])
+            {
+                intervals[j - 1][1] = Math.max(intervals[j - 1][1], intervals[j][1]);
+                intervals.splice(j, 1);
+                j--;
+            }
+        }
+
+        const results = [];
+        for(var j = 0; j < intervals.length; j++)
+        {
+            if(intervals[j][0] > max || 0 > intervals[j][1])
+            {
+                continue;
+            }
+            results.push([Math.max(intervals[j][0], 0), Math.min(intervals[j][1], max)]);
+        }
+
+        if(results.length > 1)
+        {
+            const xVal = results[0][1] + 1;
+            console.log(xVal * 4000000 + i);
+            
+            //break after first result
+            return;
+        }
+    }
 }
